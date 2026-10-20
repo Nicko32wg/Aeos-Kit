@@ -147,3 +147,69 @@ Sections:
     - Enregistrer l'image dans le dossier Carte : Aeos-Kit/ressources/map_background/
     <br><img src="https://raw.githubusercontent.com/CapitaineBaguette/Aeos-Kit/v1.0-release/ressources/notice/folder_map_background.png" alt="Image Dossier Carte" title="Image Dossier Carte">
     - Remplacer l'ancienne et nommer la nouvelle image "map" au format ".png".
+
+/* Compatibilidad tactil para Aeos-Kit */
+(function () {
+  let touchDragging = false;
+
+  document.addEventListener("touchstart", function (e) {
+    const target = e.target.closest(".draggable");
+    if (!target) return;
+
+    const touch = e.changedTouches[0];
+    touchDragging = true;
+    e.preventDefault();
+
+    target.dispatchEvent(new MouseEvent("mousedown", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      button: 0,
+      buttons: 1,
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    }));
+  }, { passive: false });
+
+  document.addEventListener("touchmove", function (e) {
+    if (!touchDragging) return;
+
+    const touch = e.changedTouches[0];
+    e.preventDefault();
+
+    document.dispatchEvent(new MouseEvent("mousemove", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      button: 0,
+      buttons: 1,
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    }));
+  }, { passive: false });
+
+  document.addEventListener("touchend", function (e) {
+    if (!touchDragging) return;
+
+    const touch = e.changedTouches[0];
+    touchDragging = false;
+
+    document.dispatchEvent(new MouseEvent("mouseup", {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      button: 0,
+      buttons: 0,
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    }));
+  }, { passive: false });
+
+  document.addEventListener("touchcancel", function () {
+    if (!touchDragging) return;
+    touchDragging = false;
+    if (typeof cancelDragAndDrop === "function") {
+      cancelDragAndDrop();
+    }
+  });
+})();
